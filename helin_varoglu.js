@@ -78,7 +78,6 @@
             }
 
             .product {
-                flex: 0 0 calc(100%/8);
                 min-width: 100px;
                 border: 0px;
                 padding: 10px;
@@ -86,6 +85,7 @@
                 cursor: pointer;
                 position: relative;
                 flex-grow: 1 !important;
+                width: max-content !important;
             }
 
             .product img {
@@ -155,7 +155,8 @@
 
                     let productHTML = `
                         <div class="${'product'}" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-img="${product.img}">
-                            <img src="${product.img}" alt="${product.name}">
+                            
+                        <img src="${product.img}" alt="${product.name}">
                             <div class="${'product-text'}">
                                 <p class="${'product-header'}">${product.name}</p>
                                 <h3 class="${'product-price'}">${product.price} TL</h3>
@@ -171,7 +172,42 @@
 
                 $(".left-button").click(() => rotateCarousel("left"));
                 $(".right-button").click(() => rotateCarousel("right"));
+
+                $(".products").on("click", ".product", function () {
+
+                    let productId = $(this).attr("data-id");
+                    let productName = $(this).attr("data-name");
+                    let productPrice = $(this).attr("data-price");
+                    let productImg = $(this).attr("data-img");
+
+                    let newTab = window.open();
+                    newTab.document.write(`
+                        <html>
+                        <head>
+                            <title>${productName}</title>
+                            <style>
+                                body {text-align: center; padding: 20px; font-family: Open Sans, sans-serif;}
+                                .product-container { width: 50%; margin: auto; padding: 20px; box-shadow:  0px 0px 10px rgba(0, 0, 0, 0.3); background-color: #fff}
+                                img { width: 20rem; height: 30rem; object-fit: cover; }
+                                h2 { font-size: 18px; margin: 10px 0; font-weight: lighter; }
+                                p { color: #193db0; font-size: 24px; display: inline-block; font-weight: bold; margin: 10px !important; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="product-container">
+                                                                
+                                <img src="${productImg}">
+                                <h2>${productName}</h2>
+                                <p>${productPrice} TL</p>
+                            </div>
+
+                        </body>
+                        </html>
+                    `);
+                });
             }
+
+           
 
             function rotateCarousel(direction) {
 
