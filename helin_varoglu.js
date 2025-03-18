@@ -74,16 +74,18 @@
                 flex-wrap: nowrap;
                 transition: transform 0.5s ease-in-out;
                 width: max-content;
+                height: max-content !important;
             }
 
             .product {
-                flex: 0 0 calc(100% / 8);
+                flex: 0 0 calc(100%/8);
                 min-width: 100px;
                 border: 0px;
                 padding: 10px;
                 box-sizing: border-box;
                 cursor: pointer;
                 position: relative;
+                flex-grow: 1 !important;
             }
 
             .product img {
@@ -92,19 +94,26 @@
                 object-fit: cover;
             }
 
+            .product-text {
+                background-color: #fffff;
+            }
+
             .product-price {
                 color: #193db0;
                 font-size: 18px;
                 display: inline-block;
                 line-height: 22px;
                 font-weight: bold;
+                position: absolute;
+                bottom: 0; 
             } 
 
             .product-header {
-                padding-top: 5px;
+                padding: 8px 0;
                 max-width: 20rem;
                 color: #302e2b;
                 overflow-wrap: fit-content;
+                font-size: 14px;
             }
 
             
@@ -120,7 +129,10 @@
 
         $(document).ready(function () {
             const api = "https://gist.githubusercontent.com/sevindi/5765c5812bbc8238a38b3cf52f233651/raw/56261d81af8561bf0a7cf692fe572f9e1e91f372/products.json";
-
+            let currIndex = 1;
+            let productWidth = 0;
+            let totalProductsDiv = 0;
+            let totalProductsWidth = 0;
 
             let productList = JSON.parse(localStorage.getItem("productList"));
 
@@ -144,12 +156,35 @@
                     let productHTML = `
                         <div class="${'product'}" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-img="${product.img}">
                             <img src="${product.img}" alt="${product.name}">
-                            <p class="${'product-header'}">${product.name}</p>
-                            <h3 class="${'product-price'}">${product.price} TL</h3>
+                            <div class="${'product-text'}">
+                                <p class="${'product-header'}">${product.name}</p>
+                                <h3 class="${'product-price'}">${product.price} TL</h3>
+                            </div>
                         </div>
                     `;
                     $('.products').append(productHTML);
                 });
+
+                productWidth = $(".product").outerWidth(true);
+                totalProductsWidth = $(".products-wrapper").outerWidth(true);
+                totalProductsDiv = $(".product").length;
+
+                $(".left-button").click(() => rotateCarousel("left"));
+                $(".right-button").click(() => rotateCarousel("right"));
+            }
+
+            function rotateCarousel(direction) {
+
+                let visibleProducts = totalProductsWidth / productWidth;
+
+                if (direction === "right" && currIndex < totalProductsDiv - visibleProducts) {
+                    currIndex++;
+                } else if (direction === "left" && currIndex > 0) {
+                    currIndex--;
+                }
+
+                let translateX = -currIndex * productWidth;
+                $('.products').css("transform", `translateX(${translateX}px)`);
             }
 
         });
