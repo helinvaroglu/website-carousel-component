@@ -131,7 +131,14 @@
                 z-index: 10;
             }
 
-            
+            .heart-icon {
+                cursor: pointer;
+            }
+
+            .heart-icon.filled path {
+                fill: blue !important; 
+            }
+
         `;
 
         $('<style>').addClass('carousel-style').html(css).appendTo('head');
@@ -150,6 +157,7 @@
             let totalProductsWidth = 0;
 
             let productList = JSON.parse(localStorage.getItem("productList"));
+            let favoriteList = JSON.parse(localStorage.getItem("favoriteProducts")) || {}; 
 
             if (productList) {
                 console.log("Fetching products from local storage.");
@@ -164,14 +172,31 @@
                 });
             }
 
+            function toggleFavorite(productId, iconElement) {
+                let favoriteProducts = JSON.parse(localStorage.getItem("favoriteProducts")) || {};
+
+                if (favoriteProducts[productId]) {
+                    delete favoriteProducts[productId];
+                    $(iconElement).removeClass("filled");
+                } else {
+                    favoriteProducts[productId] = true;
+                    $(iconElement).addClass("filled");
+                }
+
+                localStorage.setItem("favoriteProducts", JSON.stringify(favoriteProducts));
+            }
 
             function renderProducts(products) {
+
                 products.forEach((product) => {
+
+                    let productId = $(this).attr("data-id");
+                    let isFavorite = favoriteList[productId] ? "filled" : "";
 
                     let productHTML = `
                         <div class="${'product'}" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-img="${product.img}">
                             <div class="${'favorite-icon-div'}">
-                                <svg width="36px" height="36px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11.993 5.09691C11.0387 4.25883 9.78328 3.75 8.40796 3.75C5.42122 3.75 3 6.1497 3 9.10988C3 10.473 3.50639 11.7242 4.35199 12.67L12 20.25L19.4216 12.8944L19.641 12.6631C20.4866 11.7172 21 10.473 21 9.10988C21 6.1497 18.5788 3.75 15.592 3.75C14.2167 3.75 12.9613 4.25883 12.007 5.09692L12 5.08998L11.993 5.09691ZM12 7.09938L12.0549 7.14755L12.9079 6.30208L12.9968 6.22399C13.6868 5.61806 14.5932 5.25 15.592 5.25C17.763 5.25 19.5 6.99073 19.5 9.10988C19.5 10.0813 19.1385 10.9674 18.5363 11.6481L18.3492 11.8453L12 18.1381L5.44274 11.6391C4.85393 10.9658 4.5 10.0809 4.5 9.10988C4.5 6.99073 6.23699 5.25 8.40796 5.25C9.40675 5.25 10.3132 5.61806 11.0032 6.22398L11.0921 6.30203L11.9452 7.14752L12 7.09938Z" fill="#000"></path> </g></svg>
+                                <svg class="heart-icon ${isFavorite}" data-id="${product.id}" width="36px" height="36px" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4.45067 13.9082L11.4033 20.4395C11.6428 20.6644 11.7625 20.7769 11.9037 20.8046C11.9673 20.8171 12.0327 20.8171 12.0963 20.8046C12.2375 20.7769 12.3572 20.6644 12.5967 20.4395L19.5493 13.9082C21.5055 12.0706 21.743 9.0466 20.0978 6.92607L19.7885 6.52734C17.8203 3.99058 13.8696 4.41601 12.4867 7.31365C12.2913 7.72296 11.7087 7.72296 11.5133 7.31365C10.1304 4.41601 6.17972 3.99058 4.21154 6.52735L3.90219 6.92607C2.25695 9.0466 2.4945 12.0706 4.45067 13.9082Z" fill="none" stroke="#222222" stroke-width="1"></path> </g></svg>
                             </div>
                             <img src="${product.img}" alt="${product.name}">
                             <div class="${'product-text'}">
@@ -182,6 +207,11 @@
                     `;
                     $('.products').append(productHTML);
                 });
+                $(".heart-icon").click(function (event) {
+                    event.stopPropagation();
+                    let productId = $(this).data("id");
+                    toggleFavorite(productId, this);
+                });    
 
                 productWidth = $(".product").outerWidth(true);
                 totalProductsWidth = $(".products-wrapper").outerWidth(true);
@@ -192,7 +222,6 @@
 
                 $(".products").on("click", ".product", function () {
 
-                    let productId = $(this).attr("data-id");
                     let productName = $(this).attr("data-name");
                     let productPrice = $(this).attr("data-price");
                     let productImg = $(this).attr("data-img");
@@ -223,8 +252,6 @@
                     `);
                 });
             }
-
-           
 
             function rotateCarousel(direction) {
 
