@@ -9,7 +9,11 @@
         const html = `
             <div class="container">
                 <h1>You Might Also Like</h1>
-                
+                <button class="left-button">&lt;</button>
+                <div class="products-wrapper">
+                    
+                </div>
+                <button class="right-button">&gt;</button>
             </div>
         `;
 
@@ -31,6 +35,38 @@
                 font-weight: lighter;
                 padding: 15px 0;
                 margin: 0;
+            }
+
+            .products-wrapper {
+                overflow: hidden;
+                width: 90%;
+                margin: auto;
+            }
+
+            .right-button {
+                position: absolute;
+                top: 50%;
+                color: #29323b;
+                background-color: transparent;
+                border: none;
+                padding: 10px 15px;
+                cursor: pointer;
+                font-size: 20px;
+                font-weight: bolder;
+                right: 10px;
+            }
+
+            .left-button {
+                position: absolute;
+                top: 50%;
+                color: #29323b;
+                background-color: transparent;
+                border: none;
+                padding: 10px 15px;
+                cursor: pointer;
+                font-size: 20px;
+                font-weight: bolder;
+                left: 10px;
             }
 
             
